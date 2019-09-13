@@ -18,6 +18,7 @@ class App extends Component {
     this.setState({result: '0'})
   }
   addToCurrent = (symbol) => {
+    console.log(symbol);
     this.setState({current: this.state.current + symbol})
   }
 
@@ -43,17 +44,22 @@ class App extends Component {
 
     ];
     return (
-      <div className="App">
-        <input className = "result" type = "text" value ={this.state.current} />
-        {buttons.map((btn, i) => {
-          return <Button 
-                  symbol = {btn.symbol} 
-                    cols = {btn.cols}
-                    action = {(symbol) => btn.action} 
-                  />
-        })}
+            <div className="App">
+                <input 
+                  className = "result" 
+                  type = "text" 
+                  value ={this.state.current} />
+
+                  {buttons.map((btn, i) => {
+                    return <Button 
+                          key = {i}
+                          symbol = {btn.symbol} 
+                          cols = {btn.cols}
+                          action = {(symbol) => btn.action(symbol)} />
+                    
+                 })}
         
-      </div>
+            </div>
     );
   }
 }
