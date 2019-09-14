@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 //import './App.css';
 //import FoodOrder from './components/FoodOrderComponent';
 import Button from './components/ButtonComponent';
+import './css/Style.css';
 
 class App extends Component {
   constructor(props){
@@ -10,16 +11,38 @@ class App extends Component {
 
     this.state = {
       current: '0',
-      previous: []
+      previous: [],
+      nextIsReset: false
     }
   }
-
+  toCalculate = (symbol) => {
+   // e.preventDefault();
+   //console.log(e.target.value)
+   let {current, previous, nextIsReset} = this.state;
+   if(previous.length > 0){
+     current = eval(String(previous[previous.length - 1] + current));
+     this.setState({current, previous, nextIsReset});
+   }
+  }
   reset = () => {
-    this.setState({result: '0'})
+    this.setState({current: '0',
+     previous: [],
+    nextIsReset: false})
   }
   addToCurrent = (symbol) => {
+   // e.preventDefault();
     console.log(symbol);
-    this.setState({current: this.state.current + symbol})
+    if(["/", "-", "+", "*"].indexOf(symbol) > -1){
+      let {previous} = this.state;
+      previous.push(this.state.current + symbol);
+      this.setState({previous,nextIsReset: true});
+    }else{
+      if(this.state.current === "0" && symbol !== "." || this.state.nextIsReset){
+        this.setState({current: symbol, nextIsReset: false});
+      } else {
+        this.setState({current: this.state.current + symbol});
+      }
+    }  
   }
 
   render() {
@@ -29,7 +52,7 @@ class App extends Component {
       {symbol: '7', cols: 1, action: this.addToCurrent},
       {symbol: '8', cols: 1, action: this.addToCurrent},
       {symbol: '9', cols: 1, action: this.addToCurrent},
-      {symbol: 'x', cols: 1, action: this.addToCurrent},
+      {symbol: '*', cols: 1, action: this.addToCurrent},
       {symbol: '4', cols: 1, action: this.addToCurrent},
       {symbol: '5', cols: 1, action: this.addToCurrent},
       {symbol: '6', cols: 1, action: this.addToCurrent},
@@ -40,11 +63,16 @@ class App extends Component {
       {symbol: '+', cols: 1, action: this.addToCurrent},
       {symbol: '0', cols: 1, action: this.addToCurrent},
       {symbol: '.', cols: 1, action: this.addToCurrent},
-      {symbol: '=', cols: 1, action: this.addToCurrent}
+      {symbol: '=', cols: 1, action: this.toCalculate}
 
     ];
     return (
             <div className="App">
+                {this.state.previous.length > 0?
+                <div className ="floaty-last">
+                  {this.state.previous(this.state.previous.length - 1)}
+                </div>
+                :null}
                 <input 
                   className = "result" 
                   type = "text" 
@@ -55,8 +83,7 @@ class App extends Component {
                           key = {i}
                           symbol = {btn.symbol} 
                           cols = {btn.cols}
-                          action = {(symbol) => btn.action(symbol)} />
-                    
+                          action = {(symbol) => btn.action(symbol)} />                  
                  })}
         
             </div>
